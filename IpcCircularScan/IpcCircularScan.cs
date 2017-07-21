@@ -64,6 +64,8 @@ namespace IpcCircularScan
         public Configuration mConfiguration;
         /// <summary> The path where the configuration data will be saved to </summary>
         public string mConfigurationDirectory = "";
+        /// <summary> Project Name </summary>
+        private string mProjectName = "";
         /// <summary> The number of heartbeats since connection </summary>
         private UInt32 mHeartBeats = 0;
         /// <summary>The list with the panels to show live connection with host</summary>
@@ -645,7 +647,8 @@ namespace IpcCircularScan
 
             try
             {
-                mConfiguration.ProjectName = textBoxProjectName.Text.ToString();
+                mProjectName = textBoxProjectName.Text;
+                mConfiguration.ProjectName = mProjectName;
                 LayoutUI();
             }
             catch (Exception ex)
