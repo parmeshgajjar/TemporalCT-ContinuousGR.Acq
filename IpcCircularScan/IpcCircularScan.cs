@@ -144,6 +144,9 @@ namespace IpcCircularScan
         /// <summary> Axis Labels </summary>
         private List<string> AxisListLabels = new List<string> { "Rotate" };
 
+        /// <summary> Output log text that includes time and date stamps </summary>
+        public string OutputLogText = null;
+
         #endregion Variables
 
         /// <summary>
@@ -361,28 +364,9 @@ namespace IpcCircularScan
         {
             try
             {
-                // Create folders for test results
-                mConfiguration.ProjectDirectory = mConfiguration.ResultsDirectory + @"\" + mConfiguration.ProjectName + @"_" + DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-tt");
-
-                if (!Directory.Exists(mConfiguration.ProjectDirectory))
-                {
-                    Directory.CreateDirectory(mConfiguration.ProjectDirectory);
-                }
-                else
-                {
-                    mConfiguration.ProjectDirectory += "2"; //just in case the folder already exists
-                    Directory.CreateDirectory(mConfiguration.ProjectDirectory);
-                }
-
-                Configuration.Save(mConfigurationDirectory, mConfiguration);
-                mApplicationState = EApplicationState.Running; //change state
-                mStatus = EStatus.OK;
-                textBoxLog.Clear();
-                LayoutUI();
-
                 // Start test
-                mStop = false;
                 mWorkingThread = new Thread(WorkingThread);
+                mWorkingThread.Name = "Main Working Thread";
                 mWorkingThread.Start();
             }
             catch (Exception ex)
@@ -402,18 +386,12 @@ namespace IpcCircularScan
         /// <param name="e"></param>
         private void buttonStop_Click(object sender, EventArgs e)
         {
-            // If no existing problem, then set status to cancel
-            if (mStatus == EStatus.OK)
+            try
             {
-                mStop = true;
-                mStatus = EStatus.ExternalCancel;
-                mWorkingThread.Join();//close threads
-                mWorkingThread = null;
-                mChannels.Manipulator.Axes.Stop(); //stop movement on all axes
-                mChannels.Xray.XRays.GenerationDemand(false); //turn x-rays off
-                mApplicationState = EApplicationState.Connected;//stay connected to Inspect-X
-                LayoutUI();
+                UserAbort();
             }
+            catch (Exception ex)
+            { AppLog.LogException(ex); }
         }
 
         #endregion Start-Stop buttons
@@ -927,7 +905,7 @@ namespace IpcCircularScan
                 buttonStop.Enabled = false;
                 buttonStop.Visible = false;
             }
-            else
+            else if (mApplicationState == EApplicationState.Running)
             {
                 panelCommunication.Enabled = true;
                 buttonConnect.Visible = false;
@@ -1751,6 +1729,27 @@ namespace IpcCircularScan
 
         #region Output
 
+        /// <summary>
+        /// Create directory
+        /// </summary>
+        public void CreateDirectory()
+        {
+            // Create folders for test results
+            mConfiguration.ProjectDirectory = mConfiguration.ResultsDirectory + @"\" + mConfiguration.ProjectName + @"_" + DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-tt");
+
+            if (!Directory.Exists(mConfiguration.ProjectDirectory))
+            {
+                Directory.CreateDirectory(mConfiguration.ProjectDirectory);
+            }
+            else
+            {
+                mConfiguration.ProjectDirectory += "2"; //just in case the folder already exists
+                Directory.CreateDirectory(mConfiguration.ProjectDirectory);
+            }
+            Configuration.Save(mConfigurationDirectory, mConfiguration);
+        }
+
+
         //*********************************************************************
         /// <summary>
         /// Dumps info onto text box
@@ -1762,6 +1761,7 @@ namespace IpcCircularScan
                 this.Invoke((MethodInvoker)delegate
                 {
                     textBoxLog.Text += info + "\r\n";
+                    OutputLogText += DateTime.Now.ToString("dd/MM/yyyy H:mm:ss.fff") + " : " + info + "\r\n";
                     textBoxLog.SelectionStart = textBoxLog.Text.Length;
                     textBoxLog.ScrollToCaret();
                 });
@@ -1769,8 +1769,22 @@ namespace IpcCircularScan
             {
 
                 textBoxLog.Text += info + "\r\n";
+                OutputLogText += DateTime.Now.ToString("dd/MM/yyyy H:mm:ss.fff") + " : " + info + "\r\n";
                 textBoxLog.SelectionStart = textBoxLog.Text.Length;
                 textBoxLog.ScrollToCaret();
+            }
+        }
+
+        public void DisplayLogClear()
+        {
+            if (this.InvokeRequired)
+                this.Invoke((MethodInvoker)delegate
+                {
+                    textBoxLog.Clear();
+                });
+            else
+            {
+                textBoxLog.Clear();
             }
         }
 
@@ -1781,9 +1795,6 @@ namespace IpcCircularScan
         {
             try
             {
-                // Grab output text from textbox log
-                string outputtext = textBoxLog.Text.ToString();
-
                 // Filename
                 string outputfilename = mConfiguration.ProjectDirectory + @"\" + mConfiguration.ProjectName + @".log";
 
@@ -1791,7 +1802,7 @@ namespace IpcCircularScan
                 System.IO.StreamWriter logfile = new StreamWriter(outputfilename, true);
 
                 // Write to file
-                logfile.Write(outputtext);
+                logfile.Write(OutputLogText);
 
                 //Close file
                 logfile.Close();
@@ -1810,9 +1821,6 @@ namespace IpcCircularScan
         {
             try
             {
-                // Grab output text from textbox log
-                string outputtext = textBoxLog.Text.ToString();
-
                 // Filename
                 string outputfilename = aFilename + @".log";
 
@@ -1820,7 +1828,7 @@ namespace IpcCircularScan
                 System.IO.StreamWriter logfile = new StreamWriter(outputfilename, true);
 
                 // Write to file
-                logfile.Write(outputtext);
+                logfile.Write(OutputLogText);
 
                 //Close file
                 logfile.Close();
@@ -1841,6 +1849,7 @@ namespace IpcCircularScan
         private void CircularScanRoutine()
         {
             // start a new test
+            mStop = false;
             // This will record time started and reset the number of images captured
             mScan = new ProjectScan();
 
@@ -1901,7 +1910,7 @@ namespace IpcCircularScan
 
             #region Capture loop
             // Capture and XrayMonitoring loop
-            while (!mStop && mXraysStable)
+            while (!mStop && mXraysStable && mStatus == EStatus.OK)
             {
                 if (!mManipulatorHomed)
                 {
@@ -1981,17 +1990,37 @@ namespace IpcCircularScan
             mAngFile.Close();
             mChannels.Xray.Controller.OperationMode(IpcContract.EOperationMode.Manual);
             mChannels.Xray.XRays.GenerationDemand(false);
-            mApplicationState = EApplicationState.Connected;
 
             // Produce Log file
             OutputLogFile();
 
-            //Reset UI
-            LayoutUI();
+
 
         }
 
         #endregion Circular Scan
+
+        #region XCT Scan
+
+        void XCTScan(string ProjectName)
+        {
+            // Project name
+            mConfiguration.ProjectName = ProjectName;
+
+            // Create Directory 
+            CreateDirectory();
+
+            // Clear text boxes
+            DisplayLogClear();
+
+            // Layout UI
+            LayoutUI();
+
+            // Run Circular Scan
+            CircularScanRoutine();
+        }
+
+        #endregion XCT Scan
 
         #region Main routine
         //****************************************************************
@@ -2000,8 +2029,37 @@ namespace IpcCircularScan
         /// </summary>
         private void WorkingThread()
         {
-            // Run Circular Scan
-            CircularScanRoutine();
+            // Change statuses
+            mApplicationState = EApplicationState.Running;
+            mStatus = EStatus.OK;
+
+            // Run XCT Scan
+            XCTScan(mProjectName);
+
+            // Change statuses when process is finished
+            mApplicationState = EApplicationState.Connected;
+            
+            //Reset UI
+            LayoutUI();
+        }
+
+        /// <summary>
+        /// Abort function
+        /// </summary>
+        private void UserAbort()
+        {
+            // If no existing problem, then set status to cancel
+            if (mStatus == EStatus.OK)
+            {
+                DisplayLog("Process aborted by the user");
+                // Set stop flags
+                mStop = true;
+                mStatus = EStatus.ExternalCancel;
+                mChannels.Manipulator.Axes.Stop(); //stop movement on all axes
+                mChannels.Xray.XRays.GenerationDemand(false); //turn x-rays off
+                mApplicationState = EApplicationState.Connected;//stay connected to Inspect-X
+                LayoutUI();
+            }
         }
 
         #endregion Main routine
