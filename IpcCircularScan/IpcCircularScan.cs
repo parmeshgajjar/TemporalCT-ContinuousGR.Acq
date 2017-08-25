@@ -380,7 +380,7 @@ namespace IpcCircularScan
 
         //*****************************************************************
         /// <summary>
-        /// Ends the test process, stops manipulator moving, stops x-rays
+        /// Ends the process by calling the User Abort function
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -1775,6 +1775,9 @@ namespace IpcCircularScan
             }
         }
 
+        /// <summary>
+        /// Function for clearing the output display box. Note the Output Log is not cleared. 
+        /// </summary>
         public void DisplayLogClear()
         {
             if (this.InvokeRequired)
@@ -1910,8 +1913,15 @@ namespace IpcCircularScan
 
             #region Capture loop
             // Capture and XrayMonitoring loop
-            while (!mStop && mXraysStable && mStatus == EStatus.OK)
+            while (!mStop && mStatus == EStatus.OK)
             {
+                // If X-rays are not stable, then wait until they have returned to stability
+                if (!mXraysStable)
+                {
+                    while (!mXraysStable)
+                        Thread.Sleep(100);
+                }
+                // Check if Manipulator not homed
                 if (!mManipulatorHomed)
                 {
                     DialogResult dialogResult = MessageBox.Show("The manipulator axes have not been homed. The movement cannot be started until all axes have been homed. Do you want to home all axes?",
@@ -2032,13 +2042,15 @@ namespace IpcCircularScan
             // Change statuses
             mApplicationState = EApplicationState.Running;
             mStatus = EStatus.OK;
+            // Layout UI Appropriately
+            LayoutUI();
 
             // Run XCT Scan
             XCTScan(mProjectName);
 
             // Change statuses when process is finished
             mApplicationState = EApplicationState.Connected;
-            
+
             //Reset UI
             LayoutUI();
         }
