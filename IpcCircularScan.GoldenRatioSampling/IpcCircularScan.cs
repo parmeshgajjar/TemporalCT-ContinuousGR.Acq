@@ -1,28 +1,11 @@
 ﻿
-//**********************************************************************************************************************************************************//
-//																																							//
-//	The purpose of IpcDemo project is to show how Inspect-X can be programmed externally using Microsoft.NET platform, Inter Process Communication (IPC).	//
-//	It should be used together with the Inspect-X Programming Manual.																						//
-//	This example shows how to																																//
-//		-	connect to Inspect-X,																															//
-//		-	get data from Inspect-X,																														//
-//		-	tell Inspect-X to do something.																													//
-//	In particular the following functionalities are present:																								//
-//		-	Heartbeat to Inspect-X																															//
-//		-	Get beam data																																	//
-//		-	Get manipulator position																														//
-//		-	Set binning mode																																//
-//		-	Set exposure																																	//
-//		-	Set frames to be averaged																														//
-//		-	Set number of projections as well as the start and end angle																					//
-//		-	Home manipulator																																//
-//		-	Move manipulator																																//				
-//		-	Turn x-rays on/off																																//				
-//		-	Take images																																		//
-//		-	Save results			
+//********************************//
 //
-//										
-//**********************************************************************************************************************************************************//
+// This IPC code performs a circular
+// scan with golden ratio angular
+// sampling. 
+//
+//********************************//
 
 
 using System;
@@ -147,6 +130,18 @@ namespace IpcCircularScan
         /// <summary> Output log text that includes time and date stamps </summary>
         public string OutputLogText = null;
 
+		/// <summary> Golden Ratio chi </summary>
+		public static double g = 0.5*(Math.Sqrt(5)-1);
+		
+		/// <summary> Golden Sampling Angle </summary>
+		public static double gAng = 360*g;
+		
+		/// <summary> Modulo function </summary>
+		public static int Mod (int n, int m)
+		{
+			return ((n % m) + m) % m;
+		}
+		
         #endregion Variables
 
         /// <summary>
@@ -1910,6 +1905,9 @@ namespace IpcCircularScan
 
             // Switch X-rays on and wait for stability
             XraysOnStabilise();
+			
+			// Move tilt axis to zero
+			MoveManipulator(IpcContract.Manipulator.EAxisName.Tilt, 0);
 
             #region Capture loop
             // Capture and XrayMonitoring loop
@@ -1970,12 +1968,9 @@ namespace IpcCircularScan
                 // print line to ang file
                 mAngFile.WriteLine(mScan.ImagesCaptured + @": " + String.Format(rotateaxisposition.ToString(), "F3"));
 
-                //is it the last rotation and do the rotations add up to 360?
-                if (calculationError > 0 && mScan.ImagesCaptured == mConfiguration.NoOfProjections)
-                    position = position + (float)degreeOfTurning + (float)calculationError; //it rotations don't add up to 360 then pad it to 360
-                else
-                    position += (float)degreeOfTurning;
-
+                // Next position is current position + gAng taken modulo 360
+				position = Mod(position+gAng,360);
+				
                 // is it the last image captured?
                 if (mScan.ImagesCaptured > mConfiguration.NoOfProjections)
                 {
