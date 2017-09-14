@@ -15,7 +15,7 @@ namespace IpcCircularScan
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new IpcCircularScanForm());
+			Application.Run(new IpcCircularScanForm_goldenRatioSampling());
 		}
 	}
 }

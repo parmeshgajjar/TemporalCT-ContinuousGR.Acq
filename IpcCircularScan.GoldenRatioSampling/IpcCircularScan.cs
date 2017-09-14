@@ -26,7 +26,7 @@ using AppLog = IpcUtil.Logging;
 
 namespace IpcCircularScan
 {
-    public partial class IpcCircularScanForm : Form
+    public partial class IpcCircularScanForm_goldenRatioSampling : Form
     {
 
         /// <summary>Are we in design mode</summary>
@@ -131,13 +131,13 @@ namespace IpcCircularScan
         public string OutputLogText = null;
 
 		/// <summary> Golden Ratio chi </summary>
-		public static double g = 0.5*(Math.Sqrt(5)-1);
+		public static double g = System.Convert.ToDouble(0.5*(Math.Sqrt(5)-1));
 		
 		/// <summary> Golden Sampling Angle </summary>
-		public static double gAng = 360*g;
+		public static float gAng = (float)360.0*(float)g;
 		
 		/// <summary> Modulo function </summary>
-		public static int Mod (int n, int m)
+		public static float Mod (float n, int m)
 		{
 			return ((n % m) + m) % m;
 		}
@@ -190,7 +190,7 @@ namespace IpcCircularScan
         /// <summary>
         /// Constructor for form
         /// </summary>
-        public IpcCircularScanForm()
+        public IpcCircularScanForm_goldenRatioSampling()
         {
             try
             {
@@ -816,8 +816,8 @@ namespace IpcCircularScan
             // Only enable 360 check box if axis is rotate axis, else disable
             if (mConfiguration.Axis == IpcContract.Manipulator.EAxisName.Rotate)
             {
-                checkBox360Degree.Enabled = true;
-                checkBox360Degree.Visible = true;
+                checkBox360Degree.Enabled = false;
+                checkBox360Degree.Visible = false;
             }
             else
             {

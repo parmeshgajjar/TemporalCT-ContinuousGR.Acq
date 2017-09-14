@@ -1,6 +1,6 @@
 ﻿namespace IpcCircularScan
 {
-	partial class IpcCircularScanForm
+	partial class IpcCircularScanForm_goldenRatioSampling
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IpcCircularScanForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IpcCircularScanForm_goldenRatioSampling));
             this.panelResultsDirectory = new System.Windows.Forms.Panel();
             this.buttonBrowse = new System.Windows.Forms.Button();
             this.textBoxResultsDirectory = new System.Windows.Forms.TextBox();
@@ -538,6 +538,8 @@
             // checkBox360Degree
             // 
             this.checkBox360Degree.AutoSize = true;
+            this.checkBox360Degree.Checked = true;
+            this.checkBox360Degree.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox360Degree.Location = new System.Drawing.Point(288, 118);
             this.checkBox360Degree.Name = "checkBox360Degree";
             this.checkBox360Degree.Size = new System.Drawing.Size(82, 17);
@@ -545,6 +547,7 @@
             this.checkBox360Degree.Text = "360 Degree";
             this.toolTip.SetToolTip(this.checkBox360Degree, "Sets region of interest to full circle");
             this.checkBox360Degree.UseVisualStyleBackColor = true;
+            this.checkBox360Degree.Visible = false;
             this.checkBox360Degree.CheckedChanged += new System.EventHandler(this.checkBox360Degree_CheckedChanged);
             // 
             // panelAngle
@@ -557,6 +560,7 @@
             this.panelAngle.Name = "panelAngle";
             this.panelAngle.Size = new System.Drawing.Size(197, 56);
             this.panelAngle.TabIndex = 36;
+            this.panelAngle.Visible = false;
             // 
             // numericUpDownEndPosition
             // 
@@ -1011,7 +1015,7 @@
             this.label28.TabIndex = 3;
             this.label28.Text = "Shading Correction";
             // 
-            // IpcCircularScanForm
+            // IpcCircularScanForm_goldenRatioSampling
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -1028,8 +1032,8 @@
             this.Controls.Add(this.panelFeedback);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(900, 580);
-            this.Name = "IpcCircularScanForm";
-            this.Text = "IPC Demo - Circular Scan";
+            this.Name = "IpcCircularScanForm_goldenRatioSampling";
+            this.Text = "IPC Demo - Circular Scan (with golden ratio sampling)";
             this.panelResultsDirectory.ResumeLayout(false);
             this.panelResultsDirectory.PerformLayout();
             this.panelFeedback.ResumeLayout(false);

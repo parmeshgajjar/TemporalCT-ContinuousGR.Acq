@@ -20,7 +20,7 @@ namespace IpcCircularScan
         #region Variables
 
         /// <summary> Inherited Parent form </summary>
-        protected IpcCircularScan.IpcCircularScanForm mParentForm = null;
+        protected IpcCircularScan.IpcCircularScanForm_goldenRatioSampling mParentForm = null;
 
         /// <summary> Inherited Channels </summary>
         private IpcContractClientInterface.Channels mChannels = null;
@@ -64,7 +64,7 @@ namespace IpcCircularScan
         /// </summary>
         /// <param name="aParentForm">Parent form</param>
         /// <param name="aChannels">Channels from parent form (private)</param>
-        public ShadingCorrectionDialog(IpcCircularScan.IpcCircularScanForm aParentForm,
+        public ShadingCorrectionDialog(IpcCircularScan.IpcCircularScanForm_goldenRatioSampling aParentForm,
             IpcContractClientInterface.Channels aChannels)
         {
             // Assign the parent form
