@@ -616,7 +616,7 @@
             // 
             this.numericUpDownNoOfProjections.Location = new System.Drawing.Point(372, 47);
             this.numericUpDownNoOfProjections.Maximum = new decimal(new int[] {
-            360,
+            100000,
             0,
             0,
             0});
