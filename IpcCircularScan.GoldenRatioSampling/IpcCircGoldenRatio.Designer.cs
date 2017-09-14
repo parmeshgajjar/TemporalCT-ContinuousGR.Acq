@@ -1,4 +1,4 @@
-﻿namespace IpcCircularScan
+﻿namespace IpcCircGoldenRatioScan
 {
 	partial class IpcCircularScanForm_goldenRatioSampling
 	{

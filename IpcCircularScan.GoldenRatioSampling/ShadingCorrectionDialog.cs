@@ -12,7 +12,7 @@ using IpcContractClientInterface;
 
 using AppLog = IpcUtil.Logging;
 
-namespace IpcCircularScan
+namespace IpcCircGoldenRatioScan
 {
     public partial class ShadingCorrectionDialog : Form
     {
@@ -20,13 +20,13 @@ namespace IpcCircularScan
         #region Variables
 
         /// <summary> Inherited Parent form </summary>
-        protected IpcCircularScan.IpcCircularScanForm_goldenRatioSampling mParentForm = null;
+        protected IpcCircGoldenRatioScan.IpcCircularScanForm_goldenRatioSampling mParentForm = null;
 
         /// <summary> Inherited Channels </summary>
         private IpcContractClientInterface.Channels mChannels = null;
 
         /// <summary> Inherited Configuration </summary>
-        public IpcCircularScan.Configuration mConfiguration = null;
+        public IpcCircGoldenRatioScan.Configuration mConfiguration = null;
 
         /// <summary> Dialog status </summary>
         private enum EDialogStatus { OK, Cancel, Error };
@@ -64,7 +64,7 @@ namespace IpcCircularScan
         /// </summary>
         /// <param name="aParentForm">Parent form</param>
         /// <param name="aChannels">Channels from parent form (private)</param>
-        public ShadingCorrectionDialog(IpcCircularScan.IpcCircularScanForm_goldenRatioSampling aParentForm,
+        public ShadingCorrectionDialog(IpcCircGoldenRatioScan.IpcCircularScanForm_goldenRatioSampling aParentForm,
             IpcContractClientInterface.Channels aChannels)
         {
             // Assign the parent form

@@ -7,7 +7,7 @@ using System.IO;
 using IpcUtil;
 
 
-namespace IpcCircularScan
+namespace IpcCircGoldenRatioScan
 {
 	[Serializable]
 	public class Configuration

@@ -8,7 +8,7 @@
     <ProjectGuid>{C64786DE-9087-4444-A9C8-B4B1B79C8ABD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IpcCircularScan</RootNamespace>
+    <RootNamespace>IpcCircGoldenRatioScan</RootNamespace>
     <AssemblyName>IpcCircularScan</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
@@ -114,17 +114,17 @@
     </Compile>
     <Compile Include="XtekCT.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="IpcCircularScan.cs">
+    <Compile Include="IpcCircGoldenRatio.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="IpcCircularScan.Designer.cs">
-      <DependentUpon>IpcCircularScan.cs</DependentUpon>
+    <Compile Include="IpcCircGoldenRatio.Designer.cs">
+      <DependentUpon>IpcCircGoldenRatio.cs</DependentUpon>
     </Compile>
     <Compile Include="IpcUtilities.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="IpcCircularScan.resx">
-      <DependentUpon>IpcCircularScan.cs</DependentUpon>
+    <EmbeddedResource Include="IpcCircGoldenRatio.resx">
+      <DependentUpon>IpcCircGoldenRatio.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

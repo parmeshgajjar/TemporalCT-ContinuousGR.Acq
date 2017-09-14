@@ -24,7 +24,7 @@ using IpcContractClientInterface;
 
 using AppLog = IpcUtil.Logging;
 
-namespace IpcCircularScan
+namespace IpcCircGoldenRatioScan
 {
     public partial class IpcCircularScanForm_goldenRatioSampling : Form
     {
@@ -108,7 +108,7 @@ namespace IpcCircularScan
         System.IO.StreamWriter mAngFile = null;
 
         /// <summary> Shading correction Dialog </summary>
-        private IpcCircularScan.ShadingCorrectionDialog mShadingCorrectionDialog = null;
+        private IpcCircGoldenRatioScan.ShadingCorrectionDialog mShadingCorrectionDialog = null;
 
         // 
         // List of Axis label indices
@@ -647,7 +647,7 @@ namespace IpcCircularScan
                     this.Enabled = false;
 
                     // load shading correction dialog
-                    mShadingCorrectionDialog = new IpcCircularScan.ShadingCorrectionDialog(this, mChannels);
+                    mShadingCorrectionDialog = new IpcCircGoldenRatioScan.ShadingCorrectionDialog(this, mChannels);
                     mShadingCorrectionDialog.TopLevel = true;
                     mShadingCorrectionDialog.DialogResult = System.Windows.Forms.DialogResult.None;
                     mShadingCorrectionDialog.ShowDialog();
@@ -1885,12 +1885,9 @@ namespace IpcCircularScan
             DisplayLog("Manipulator X position:\t" + mChannels.Manipulator.Axis.Position(IpcContract.Manipulator.EAxisName.X).ToString());
             DisplayLog("Manipulator Y position:\t" + mChannels.Manipulator.Axis.Position(IpcContract.Manipulator.EAxisName.Y).ToString());
             DisplayLog("Manipulator Mag/Z position:\t" + mChannels.Manipulator.Axis.Position(IpcContract.Manipulator.EAxisName.Magnification).ToString());
-            DisplayLog("Manipulator Tilt position:\t" + mChannels.Manipulator.Axis.Position(IpcContract.Manipulator.EAxisName.Tilt).ToString());
             DisplayLog("Manipulator Detector position:\t" + mChannels.Manipulator.Axis.Position(IpcContract.Manipulator.EAxisName.Detector).ToString());
             DisplayLog("Number of Projections:\t" + mConfiguration.NoOfProjections.ToString());
             DisplayLog("Starting angle:\t" + mConfiguration.StartPosition.ToString());
-            DisplayLog("Rotation angle:\t" + mConfiguration.TotalDisplacement.ToString());
-            DisplayLog("End angle:\t" + mConfiguration.EndPosition.ToString());
             DisplayLog("X-ray kV:\t" + mChannels.Xray.XRays.KilovoltsDemand().ToString() + "kV");
             DisplayLog("X-ray uA:\t" + mChannels.Xray.XRays.MicroampsDemand().ToString() + "uA");
             DisplayLog("Exposure:\t" + mChannels.ImageProcessing.DetectorParameters.Exposure().ToString() + "ms");
@@ -1969,7 +1966,7 @@ namespace IpcCircularScan
                 mAngFile.WriteLine(mScan.ImagesCaptured + @": " + String.Format(rotateaxisposition.ToString(), "F3"));
 
                 // Next position is current position + gAng taken modulo 360
-				position = Mod(position+gAng,360);
+                position = Mod(mScan.ImagesCaptured*gAng, 360);
 				
                 // is it the last image captured?
                 if (mScan.ImagesCaptured > mConfiguration.NoOfProjections)

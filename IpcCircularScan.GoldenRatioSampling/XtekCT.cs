@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 using AppLog = IpcUtil.Logging;
 
-namespace IpcCircularScan
+namespace IpcCircGoldenRatioScan
 {
     class XtekCT
     {
