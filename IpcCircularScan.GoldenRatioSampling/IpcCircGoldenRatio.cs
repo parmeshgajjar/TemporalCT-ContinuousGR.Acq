@@ -1963,7 +1963,7 @@ namespace IpcCircGoldenRatioScan
                 rotateaxisposition = mChannels.Manipulator.Axis.Position(mConfiguration.Axis);
 
                 // print line to ang file
-                mAngFile.WriteLine(mScan.ImagesCaptured + @": " + String.Format(rotateaxisposition.ToString(), "F3"));
+                mAngFile.WriteLine(mScan.ImagesCaptured + @":\t" + String.Format(rotateaxisposition.ToString(), "F3"));
 
                 // Next position is current position + gAng taken modulo 360
                 position = Mod(mScan.ImagesCaptured*gAng, 360);
