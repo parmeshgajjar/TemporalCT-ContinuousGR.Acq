@@ -61,16 +61,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.panelXraysDisplay = new System.Windows.Forms.Panel();
             this.panelImageSettings = new System.Windows.Forms.Panel();
-            this.label31 = new System.Windows.Forms.Label();
             this.numericUpDownNoImagesToAverage = new System.Windows.Forms.NumericUpDown();
-            this.comboBoxAxis = new System.Windows.Forms.ComboBox();
             this.label30 = new System.Windows.Forms.Label();
-            this.checkBox360Degree = new System.Windows.Forms.CheckBox();
-            this.panelAngle = new System.Windows.Forms.Panel();
-            this.numericUpDownEndPosition = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDownStartPosition = new System.Windows.Forms.NumericUpDown();
-            this.label26 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
             this.numericUpDownNoOfProjections = new System.Windows.Forms.NumericUpDown();
             this.label14 = new System.Windows.Forms.Label();
             this.labelAccumulation = new System.Windows.Forms.Label();
@@ -83,8 +75,6 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.buttonStop = new System.Windows.Forms.Button();
-            this.buttonStart = new System.Windows.Forms.Button();
             this.panelCommunication = new System.Windows.Forms.Panel();
             this.buttonDisconnect = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
@@ -108,14 +98,14 @@
             this.panelShadingCorrection = new System.Windows.Forms.Panel();
             this.label29 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
+            this.buttonPause = new System.Windows.Forms.Button();
+            this.buttonStop = new System.Windows.Forms.Button();
+            this.buttonStart = new System.Windows.Forms.Button();
             this.panelResultsDirectory.SuspendLayout();
             this.panelFeedback.SuspendLayout();
             this.panelManipulatorDisplay.SuspendLayout();
             this.panelImageSettings.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownNoImagesToAverage)).BeginInit();
-            this.panelAngle.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownEndPosition)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStartPosition)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownNoOfProjections)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarAccumulation)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarExposure)).BeginInit();
@@ -459,12 +449,8 @@
             // 
             // panelImageSettings
             // 
-            this.panelImageSettings.Controls.Add(this.label31);
             this.panelImageSettings.Controls.Add(this.numericUpDownNoImagesToAverage);
-            this.panelImageSettings.Controls.Add(this.comboBoxAxis);
             this.panelImageSettings.Controls.Add(this.label30);
-            this.panelImageSettings.Controls.Add(this.checkBox360Degree);
-            this.panelImageSettings.Controls.Add(this.panelAngle);
             this.panelImageSettings.Controls.Add(this.numericUpDownNoOfProjections);
             this.panelImageSettings.Controls.Add(this.label14);
             this.panelImageSettings.Controls.Add(this.labelAccumulation);
@@ -479,21 +465,12 @@
             this.panelImageSettings.Controls.Add(this.label5);
             this.panelImageSettings.Location = new System.Drawing.Point(6, 276);
             this.panelImageSettings.Name = "panelImageSettings";
-            this.panelImageSettings.Size = new System.Drawing.Size(482, 199);
+            this.panelImageSettings.Size = new System.Drawing.Size(482, 173);
             this.panelImageSettings.TabIndex = 2;
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(284, 84);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(26, 13);
-            this.label31.TabIndex = 45;
-            this.label31.Text = "Axis";
             // 
             // numericUpDownNoImagesToAverage
             // 
-            this.numericUpDownNoImagesToAverage.Location = new System.Drawing.Point(112, 168);
+            this.numericUpDownNoImagesToAverage.Location = new System.Drawing.Point(385, 87);
             this.numericUpDownNoImagesToAverage.Maximum = new decimal(new int[] {
             2048,
             0,
@@ -505,7 +482,7 @@
             0,
             0});
             this.numericUpDownNoImagesToAverage.Name = "numericUpDownNoImagesToAverage";
-            this.numericUpDownNoImagesToAverage.Size = new System.Drawing.Size(95, 20);
+            this.numericUpDownNoImagesToAverage.Size = new System.Drawing.Size(72, 20);
             this.numericUpDownNoImagesToAverage.TabIndex = 41;
             this.numericUpDownNoImagesToAverage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTip.SetToolTip(this.numericUpDownNoImagesToAverage, "Sets number of images to average");
@@ -516,105 +493,19 @@
             0});
             this.numericUpDownNoImagesToAverage.ValueChanged += new System.EventHandler(this.numericUpDownNoImagesToAverage_ValueChanged);
             // 
-            // comboBoxAxis
-            // 
-            this.comboBoxAxis.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxAxis.FormattingEnabled = true;
-            this.comboBoxAxis.Location = new System.Drawing.Point(346, 81);
-            this.comboBoxAxis.Name = "comboBoxAxis";
-            this.comboBoxAxis.Size = new System.Drawing.Size(114, 21);
-            this.comboBoxAxis.TabIndex = 44;
-            // 
             // label30
             // 
             this.label30.AutoSize = true;
             this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label30.Location = new System.Drawing.Point(5, 170);
+            this.label30.Location = new System.Drawing.Point(281, 89);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(96, 13);
             this.label30.TabIndex = 40;
             this.label30.Text = "Images to Average";
             // 
-            // checkBox360Degree
-            // 
-            this.checkBox360Degree.AutoSize = true;
-            this.checkBox360Degree.Checked = true;
-            this.checkBox360Degree.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox360Degree.Location = new System.Drawing.Point(288, 118);
-            this.checkBox360Degree.Name = "checkBox360Degree";
-            this.checkBox360Degree.Size = new System.Drawing.Size(82, 17);
-            this.checkBox360Degree.TabIndex = 37;
-            this.checkBox360Degree.Text = "360 Degree";
-            this.toolTip.SetToolTip(this.checkBox360Degree, "Sets region of interest to full circle");
-            this.checkBox360Degree.UseVisualStyleBackColor = true;
-            this.checkBox360Degree.Visible = false;
-            this.checkBox360Degree.CheckedChanged += new System.EventHandler(this.checkBox360Degree_CheckedChanged);
-            // 
-            // panelAngle
-            // 
-            this.panelAngle.Controls.Add(this.numericUpDownEndPosition);
-            this.panelAngle.Controls.Add(this.numericUpDownStartPosition);
-            this.panelAngle.Controls.Add(this.label26);
-            this.panelAngle.Controls.Add(this.label15);
-            this.panelAngle.Location = new System.Drawing.Point(282, 140);
-            this.panelAngle.Name = "panelAngle";
-            this.panelAngle.Size = new System.Drawing.Size(197, 56);
-            this.panelAngle.TabIndex = 36;
-            this.panelAngle.Visible = false;
-            // 
-            // numericUpDownEndPosition
-            // 
-            this.numericUpDownEndPosition.DecimalPlaces = 3;
-            this.numericUpDownEndPosition.Location = new System.Drawing.Point(90, 28);
-            this.numericUpDownEndPosition.Maximum = new decimal(new int[] {
-            359,
-            0,
-            0,
-            0});
-            this.numericUpDownEndPosition.Name = "numericUpDownEndPosition";
-            this.numericUpDownEndPosition.Size = new System.Drawing.Size(85, 20);
-            this.numericUpDownEndPosition.TabIndex = 35;
-            this.numericUpDownEndPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.toolTip.SetToolTip(this.numericUpDownEndPosition, "Sets the closing angle, clockwise movement");
-            this.numericUpDownEndPosition.ValueChanged += new System.EventHandler(this.numericUpDownClosingAngle_ValueChanged);
-            // 
-            // numericUpDownStartPosition
-            // 
-            this.numericUpDownStartPosition.DecimalPlaces = 3;
-            this.numericUpDownStartPosition.Location = new System.Drawing.Point(90, 1);
-            this.numericUpDownStartPosition.Maximum = new decimal(new int[] {
-            359,
-            0,
-            0,
-            0});
-            this.numericUpDownStartPosition.Name = "numericUpDownStartPosition";
-            this.numericUpDownStartPosition.Size = new System.Drawing.Size(85, 20);
-            this.numericUpDownStartPosition.TabIndex = 34;
-            this.numericUpDownStartPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.toolTip.SetToolTip(this.numericUpDownStartPosition, "Sets the starting angle, clockwise movement");
-            this.numericUpDownStartPosition.ValueChanged += new System.EventHandler(this.numericUpDownOpeningAngle_ValueChanged);
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(32, 30);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(56, 13);
-            this.label26.TabIndex = 33;
-            this.label26.Text = "End Angle";
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(29, 3);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(59, 13);
-            this.label15.TabIndex = 32;
-            this.label15.Text = "Start Angle";
-            // 
             // numericUpDownNoOfProjections
             // 
-            this.numericUpDownNoOfProjections.Location = new System.Drawing.Point(372, 47);
+            this.numericUpDownNoOfProjections.Location = new System.Drawing.Point(385, 47);
             this.numericUpDownNoOfProjections.Maximum = new decimal(new int[] {
             100000,
             0,
@@ -626,7 +517,7 @@
             0,
             0});
             this.numericUpDownNoOfProjections.Name = "numericUpDownNoOfProjections";
-            this.numericUpDownNoOfProjections.Size = new System.Drawing.Size(85, 20);
+            this.numericUpDownNoOfProjections.Size = new System.Drawing.Size(72, 20);
             this.numericUpDownNoOfProjections.TabIndex = 14;
             this.numericUpDownNoOfProjections.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.toolTip.SetToolTip(this.numericUpDownNoOfProjections, "Sets the number of images to be captured");
@@ -641,7 +532,7 @@
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(280, 49);
+            this.label14.Location = new System.Drawing.Point(287, 49);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(90, 13);
             this.label14.TabIndex = 10;
@@ -754,30 +645,6 @@
             this.label5.Size = new System.Drawing.Size(51, 13);
             this.label5.TabIndex = 6;
             this.label5.Text = "Exposure";
-            // 
-            // buttonStop
-            // 
-            this.buttonStop.Font = new System.Drawing.Font("Microsoft Sans Serif", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonStop.Location = new System.Drawing.Point(5, 575);
-            this.buttonStop.Name = "buttonStop";
-            this.buttonStop.Size = new System.Drawing.Size(484, 94);
-            this.buttonStop.TabIndex = 5;
-            this.buttonStop.Text = "Stop";
-            this.toolTip.SetToolTip(this.buttonStop, "Stops the process");
-            this.buttonStop.UseVisualStyleBackColor = true;
-            this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
-            // 
-            // buttonStart
-            // 
-            this.buttonStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonStart.Location = new System.Drawing.Point(5, 575);
-            this.buttonStart.Name = "buttonStart";
-            this.buttonStart.Size = new System.Drawing.Size(487, 94);
-            this.buttonStart.TabIndex = 6;
-            this.buttonStart.Text = "Start";
-            this.toolTip.SetToolTip(this.buttonStart, "Starts the process of taking images");
-            this.buttonStart.UseVisualStyleBackColor = true;
-            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
             // panelCommunication
             // 
@@ -902,7 +769,7 @@
             this.panelLog.Controls.Add(this.textBoxLog);
             this.panelLog.Location = new System.Drawing.Point(496, 192);
             this.panelLog.Name = "panelLog";
-            this.panelLog.Size = new System.Drawing.Size(404, 488);
+            this.panelLog.Size = new System.Drawing.Size(404, 446);
             this.panelLog.TabIndex = 8;
             // 
             // label16
@@ -921,11 +788,12 @@
             // 
             this.textBoxLog.BackColor = System.Drawing.SystemColors.ControlLight;
             this.textBoxLog.Location = new System.Drawing.Point(3, 29);
+            this.textBoxLog.Margin = new System.Windows.Forms.Padding(7);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ReadOnly = true;
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(393, 448);
+            this.textBoxLog.Size = new System.Drawing.Size(393, 407);
             this.textBoxLog.TabIndex = 0;
             // 
             // checkBoxTopMost
@@ -988,7 +856,7 @@
             this.panelShadingCorrection.Controls.Add(this.label29);
             this.panelShadingCorrection.Controls.Add(this.buttonAcquireShadingCorrection);
             this.panelShadingCorrection.Controls.Add(this.label28);
-            this.panelShadingCorrection.Location = new System.Drawing.Point(6, 481);
+            this.panelShadingCorrection.Location = new System.Drawing.Point(6, 455);
             this.panelShadingCorrection.Name = "panelShadingCorrection";
             this.panelShadingCorrection.Size = new System.Drawing.Size(483, 73);
             this.panelShadingCorrection.TabIndex = 11;
@@ -1015,19 +883,53 @@
             this.label28.TabIndex = 3;
             this.label28.Text = "Shading Correction";
             // 
+            // buttonPause
+            // 
+            this.buttonPause.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonPause.Location = new System.Drawing.Point(5, 534);
+            this.buttonPause.Name = "buttonPause";
+            this.buttonPause.Size = new System.Drawing.Size(232, 94);
+            this.buttonPause.TabIndex = 12;
+            this.buttonPause.Text = "PAUSE";
+            this.buttonPause.UseVisualStyleBackColor = true;
+            this.buttonPause.Click += new System.EventHandler(this.buttonPause_Click);
+            // 
+            // buttonStop
+            // 
+            this.buttonStop.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonStop.Location = new System.Drawing.Point(256, 534);
+            this.buttonStop.Name = "buttonStop";
+            this.buttonStop.Size = new System.Drawing.Size(232, 94);
+            this.buttonStop.TabIndex = 13;
+            this.buttonStop.Text = "STOP";
+            this.buttonStop.UseVisualStyleBackColor = true;
+            this.buttonStop.Click += new System.EventHandler(this.buttonStop_Click);
+            // 
+            // buttonStart
+            // 
+            this.buttonStart.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonStart.Location = new System.Drawing.Point(5, 534);
+            this.buttonStart.Name = "buttonStart";
+            this.buttonStart.Size = new System.Drawing.Size(482, 94);
+            this.buttonStart.TabIndex = 14;
+            this.buttonStart.Text = "START";
+            this.buttonStart.UseVisualStyleBackColor = true;
+            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
+            // 
             // IpcCircularScanForm_goldenRatioSampling
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(904, 677);
+            this.ClientSize = new System.Drawing.Size(904, 642);
+            this.Controls.Add(this.buttonStart);
+            this.Controls.Add(this.buttonStop);
+            this.Controls.Add(this.buttonPause);
             this.Controls.Add(this.panelShadingCorrection);
             this.Controls.Add(this.panelProjectName);
             this.Controls.Add(this.panelImageSettings);
             this.Controls.Add(this.checkBoxTopMost);
             this.Controls.Add(this.panelLog);
             this.Controls.Add(this.panelCommunication);
-            this.Controls.Add(this.buttonStart);
-            this.Controls.Add(this.buttonStop);
             this.Controls.Add(this.panelResultsDirectory);
             this.Controls.Add(this.panelFeedback);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1043,10 +945,6 @@
             this.panelImageSettings.ResumeLayout(false);
             this.panelImageSettings.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownNoImagesToAverage)).EndInit();
-            this.panelAngle.ResumeLayout(false);
-            this.panelAngle.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownEndPosition)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStartPosition)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownNoOfProjections)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarAccumulation)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarExposure)).EndInit();
@@ -1087,8 +985,6 @@
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.NumericUpDown numericUpDownNoOfProjections;
         private System.Windows.Forms.Panel panelManipulatorDisplay;
-		private System.Windows.Forms.Button buttonStop;
-		private System.Windows.Forms.Button buttonStart;
 		private System.Windows.Forms.Panel panelCommunication;
 		private System.Windows.Forms.Label label18;
 		private System.Windows.Forms.Label label17;
@@ -1112,13 +1008,7 @@
 		private System.Windows.Forms.TrackBar trackBarBinning;
 		private System.Windows.Forms.Label labelExposure;
 		private System.Windows.Forms.Label labelBinning;
-		private System.Windows.Forms.TrackBar trackBarExposure;
-		private System.Windows.Forms.CheckBox checkBox360Degree;
-		private System.Windows.Forms.Panel panelAngle;
-		private System.Windows.Forms.Label label26;
-		private System.Windows.Forms.Label label15;
-		private System.Windows.Forms.NumericUpDown numericUpDownEndPosition;
-		private System.Windows.Forms.NumericUpDown numericUpDownStartPosition;
+        private System.Windows.Forms.TrackBar trackBarExposure;
 		private System.Windows.Forms.Label label27;
 		private System.Windows.Forms.Label labelAccumulation;
 		private System.Windows.Forms.TrackBar trackBarAccumulation;
@@ -1142,8 +1032,9 @@
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.NumericUpDown numericUpDownNoImagesToAverage;
         private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.ComboBox comboBoxAxis;
+        private System.Windows.Forms.Button buttonPause;
+        private System.Windows.Forms.Button buttonStop;
+        private System.Windows.Forms.Button buttonStart;
 	}
 }
 

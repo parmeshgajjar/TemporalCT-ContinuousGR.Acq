@@ -101,11 +101,17 @@ namespace IpcCircGoldenRatioScan
         /// <summary>Abort state (if any)</summary>
         private EStatus mStatus = EStatus.OK;
 
+        /// <summary> Paused required? </summary>
+        private Boolean mPause = false;
+
         private ProjectScan mScan = new ProjectScan();
         private Thread mWorkingThread = null;
 
         /// <summary> ang file </summary>
         System.IO.StreamWriter mAngFile = null;
+
+        /// <summary> ang + times file </summary>
+        System.IO.StreamWriter mAngTimeFile = null;
 
         /// <summary> Shading correction Dialog </summary>
         private IpcCircGoldenRatioScan.ShadingCorrectionDialog mShadingCorrectionDialog = null;
@@ -130,18 +136,18 @@ namespace IpcCircGoldenRatioScan
         /// <summary> Output log text that includes time and date stamps </summary>
         public string OutputLogText = null;
 
-		/// <summary> Golden Ratio chi </summary>
-		public static double g = System.Convert.ToDouble(0.5*(Math.Sqrt(5)-1));
-		
-		/// <summary> Golden Sampling Angle </summary>
-		public static float gAng = (float)360.0*(float)g;
-		
-		/// <summary> Modulo function </summary>
-		public static float Mod (float n, int m)
-		{
-			return ((n % m) + m) % m;
-		}
-		
+        /// <summary> Golden Ratio chi </summary>
+        public static double g = System.Convert.ToDouble(0.5 * (Math.Sqrt(5) - 1));
+
+        /// <summary> Golden Sampling Angle </summary>
+        public static float gAng = (float)360.0 * (float)g;
+
+        /// <summary> Modulo function </summary>
+        public static float Mod(float n, int m)
+        {
+            return ((n % m) + m) % m;
+        }
+
         #endregion Variables
 
         /// <summary>
@@ -257,7 +263,7 @@ namespace IpcCircGoldenRatioScan
                 if (mLoadedOK)
                 {
                     buttonDisconnect.Location = buttonConnect.Location;
-                    buttonStop.Location = buttonStart.Location;
+                    //buttonStop.Location = buttonStart.Location;
                     LayoutUI();
                 }
                 else
@@ -348,7 +354,7 @@ namespace IpcCircGoldenRatioScan
 
         #endregion Connect and Disconnect
 
-        #region Start-Stop buttons
+        #region Start-Stop-Pause buttons
 
         //****************************************************************
         /// <summary>
@@ -389,7 +395,48 @@ namespace IpcCircGoldenRatioScan
             { AppLog.LogException(ex); }
         }
 
-        #endregion Start-Stop buttons
+        //*****************************************************************
+        /// <summary>
+        /// Routine when system is paused
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonPause_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!mPause)
+                {
+                    mPause = true;
+                    DisplayLog("Process paused by user");
+                    buttonPause.Text = "RESTART";
+                }
+                else
+                {
+                    // Check x-rays are on and stable
+                    if (mXraysStable)
+                    {
+                        mPause = false;
+                        DisplayLog("Process restarted by user");
+                        buttonPause.Text = "PAUSE";
+                        mChannels.Xray.Controller.OperationMode(IpcContract.EOperationMode.External);
+                    }
+                    // else if not on then give warning message
+                    else
+                    {
+                        mPause = true;
+                        MessageBox.Show("X-rays are no longer on. Please check before restarting", "X-rays no longer on",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                AppLog.LogException(ex);
+            }
+        }
+
+        #endregion Start-Stop-Pause buttons
 
         #region User-Interface Interaction
 
@@ -527,62 +574,6 @@ namespace IpcCircGoldenRatioScan
             }
         }
 
-        //*********************************************************************
-        /// <summary>
-        /// Sets the flags for doing a full circle of rotation and updates the configuration
-        /// </summary>
-        private void checkBox360Degree_CheckedChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                if (checkBox360Degree.Checked)
-                {
-                    panelAngle.Enabled = false;
-                    mConfiguration.Degree360 = true;
-                }
-                else
-                {
-                    panelAngle.Enabled = true;
-                    mConfiguration.Degree360 = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                AppLog.LogException(ex);
-            }
-        }
-
-        //*****************************************************************************
-        /// <summary>
-        /// Sets the starting angle in the configuration according to the value on the UI
-        /// </summary>
-        private void numericUpDownOpeningAngle_ValueChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                mConfiguration.StartPosition = numericUpDownStartPosition.Value;
-            }
-            catch (Exception ex)
-            {
-                AppLog.LogException(ex);
-            }
-        }
-
-        //*****************************************************************************
-        /// <summary>
-        /// Sets the closing angle in the configuration according to the value on the UI
-        /// </summary>
-        private void numericUpDownClosingAngle_ValueChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                mConfiguration.EndPosition = numericUpDownEndPosition.Value;
-            }
-            catch (Exception ex)
-            {
-                AppLog.LogException(ex);
-            }
-        }
 
         //*****************************************************************************
         /// <summary>
@@ -678,37 +669,12 @@ namespace IpcCircGoldenRatioScan
         /// </summary>
         private void InitialiseUI()
         {
-            // Initialise combobox
-            comboBoxAxis.DataSource = AxisListLabels;
-
-            // Look up axis from configuration
-            int axisindex = (int)mConfiguration.Axis;
-            int selectedindex = System.Array.IndexOf(mAxisListIndex, axisindex);
-            comboBoxAxis.SelectedIndex = selectedindex;
-
-            // Set axis limits
-            SetAxisLimits();
 
             //load data from configuration
             textBoxResultsDirectory.Text = mConfiguration.ResultsDirectory;
             textBoxProjectName.Text = mConfiguration.ProjectName;
             numericUpDownNoOfProjections.Value = mConfiguration.NoOfProjections;
-            numericUpDownStartPosition.Value = mConfiguration.StartPosition;
             numericUpDownNoImagesToAverage.Value = mConfiguration.AverageFrames;
-            checkBox360Degree.Checked = mConfiguration.Degree360;
-            if (mConfiguration.Degree360)
-                numericUpDownEndPosition.Value = 0;
-            else
-            {
-                decimal x = mConfiguration.EndPosition;
-                decimal min = numericUpDownEndPosition.Minimum;
-                decimal max = numericUpDownEndPosition.Maximum;
-                if (x >= min && x <= max) // Check if in range (needed if axes are changing)
-                    numericUpDownEndPosition.Value = mConfiguration.EndPosition;
-                else // Else generically set to middle value
-                    numericUpDownEndPosition.Value = Convert.ToDecimal(0.50 * (double)(min + max));
-            }
-
 
             //load current data from Inspect-X
             labelActualKV.Text = mChannels.Xray.XRays.KilovoltsActual().ToString();
@@ -721,23 +687,6 @@ namespace IpcCircGoldenRatioScan
             labelRotate.Text = mChannels.Manipulator.Axis.Position(IpcContract.Manipulator.EAxisName.Rotate).ToString("0.000");
         }
 
-        private void SetAxisLimits()
-        {
-            // Retrieve start and end limits of axes
-            float min = mChannels.Manipulator.Axis.TravelMin(mConfiguration.Axis);
-            float max = mChannels.Manipulator.Axis.TravelMax(mConfiguration.Axis);
-
-            // NumericUpDown start position
-            numericUpDownStartPosition.Minimum = (decimal)min;
-            numericUpDownStartPosition.Maximum = (decimal)max;
-
-            // NumericUpDown End position
-            numericUpDownEndPosition.Minimum = (decimal)min;
-            numericUpDownEndPosition.Maximum = (decimal)max;
-
-            // Layout User interface
-            LayoutUI();
-        }
 
         //************************************************************************
         /// <summary>Helper, setup a control with value and range. If the range
@@ -813,18 +762,6 @@ namespace IpcCircGoldenRatioScan
                 return;
             }
 
-            // Only enable 360 check box if axis is rotate axis, else disable
-            if (mConfiguration.Axis == IpcContract.Manipulator.EAxisName.Rotate)
-            {
-                checkBox360Degree.Enabled = false;
-                checkBox360Degree.Visible = false;
-            }
-            else
-            {
-                mConfiguration.Degree360 = false;
-                checkBox360Degree.Enabled = false;
-                checkBox360Degree.Visible = false;
-            }
 
             if (mApplicationState == EApplicationState.Disconnected)
             {
@@ -881,22 +818,11 @@ namespace IpcCircGoldenRatioScan
                 //shading correction panel
                 panelShadingCorrection.Enabled = true;
 
-
-                //Angles panel
-                if (mConfiguration.Degree360)
-                {
-                    panelAngle.Enabled = false;
-                    checkBox360Degree.Checked = true;
-                }
-                else
-                {
-                    panelAngle.Enabled = true;
-                    checkBox360Degree.Checked = false;
-                }
-
                 //stop/start buttons
                 buttonStart.Enabled = SettingsOK() ? true : false;
                 buttonStart.Visible = true;
+                buttonPause.Enabled = false;
+                buttonPause.Visible = false;
                 buttonStop.Enabled = false;
                 buttonStop.Visible = false;
             }
@@ -915,6 +841,8 @@ namespace IpcCircGoldenRatioScan
 
                 buttonStop.Visible = true;
                 buttonStop.Enabled = true;
+                buttonPause.Enabled = true;
+                buttonPause.Visible = true;
                 buttonStart.Visible = false;
                 buttonStart.Enabled = false;
             }
@@ -1406,18 +1334,6 @@ namespace IpcCircGoldenRatioScan
         /// </summary>
         private void UserInterfaceElements()
         {
-            // Transfer important values from form to configuration file. 
-            mConfiguration.Degree360 = checkBox360Degree.Checked;
-            if (mConfiguration.Degree360 == true)
-            {
-                mConfiguration.StartPosition = 0;
-                mConfiguration.EndPosition = 360;
-            }
-            else
-            {
-                mConfiguration.StartPosition = numericUpDownStartPosition.Value;
-                mConfiguration.EndPosition = numericUpDownEndPosition.Value;
-            }
             mConfiguration.NoOfProjections = Convert.ToInt32(numericUpDownNoOfProjections.Value);
             mConfiguration.mBinning = trackBarBinning.Value;
             mConfiguration.mAccumulation = Convert.ToInt32(Math.Pow(2.0, trackBarAccumulation.Value));
@@ -1524,74 +1440,6 @@ namespace IpcCircGoldenRatioScan
             }
         }
 
-        //*******************************************************************
-        /// <summary>
-        /// Calculates the rotation degree based on the number of projections
-        /// </summary>
-        private decimal CalculateDegreeOfRotation()
-        {
-            // Decimal value for accuracy
-            decimal degreeOfTurning = 0;
-
-            if (mConfiguration.NoOfProjections != 0)
-            {
-                decimal angleOfInterest = CalulateAngleOfInterest();
-                degreeOfTurning = Convert.ToDecimal(angleOfInterest / mConfiguration.NoOfProjections);
-            }
-            else
-            {
-                degreeOfTurning = 0;
-            }
-            mConfiguration.PositionalIncrement = degreeOfTurning;
-            return degreeOfTurning;
-        }
-
-        //********************************************************************
-        /// <summary>
-        /// Calculates the error that is introduced when rounding
-        /// </summary>
-        private decimal CalculateErrorOfRotation(decimal degreeOfTurning, int numberOfProjections)
-        {
-            decimal error = 0;
-            decimal angle = CalulateAngleOfInterest();
-
-            if (degreeOfTurning * numberOfProjections < angle)
-                error = angle - (degreeOfTurning * numberOfProjections);
-
-            return error;
-        }
-
-        //**********************************************************************
-        /// <summary>
-        /// Calculates the angle of interest, which is the difference between the start and closing angle
-        /// always clockwise direction!
-        /// </summary>
-        private decimal CalulateAngleOfInterest()
-        {
-            decimal angle;
-
-            if (mConfiguration.Degree360 == true)
-            {
-                angle = 360;
-            }
-            else
-            {
-                if (mConfiguration.StartPosition < mConfiguration.EndPosition)
-                {
-                    angle = mConfiguration.EndPosition - mConfiguration.StartPosition;
-                }
-                else
-                {
-                    //start angle is to the left of zero, Closing angle is to the right of zero
-                    //if start and end are the same, it will treat it as a whole circle
-                    angle = (360 - mConfiguration.StartPosition) + mConfiguration.EndPosition;
-                }
-            }
-            // Write to configuration file
-            mConfiguration.TotalDisplacement = angle;
-            // Return angle
-            return angle;
-        }
 
         #endregion Manipulator functions
 
@@ -1613,9 +1461,6 @@ namespace IpcCircGoldenRatioScan
                 // capture average image
                 mChannels.ImageProcessing.Image.Average(aRecursion, false);
 
-                // Wait for it to finish
-                while (mStatus == EStatus.OK && mImageCaptureComplete == false)
-                    Thread.Sleep(25);
             }
             catch (Exception ex)
             {
@@ -1642,9 +1487,6 @@ namespace IpcCircGoldenRatioScan
                 //save the current image displayed to disk
                 mChannels.ImageProcessing.Image.SaveAsTiff(fileName, true, false, true);// monochrome, no tone curve, 16-bits
 
-                //wait for it to finish
-                while (mStatus == EStatus.OK && mImageSaveComplete == false)
-                    Thread.Sleep(25);
             }
             catch (Exception ex)
             {
@@ -1859,10 +1701,6 @@ namespace IpcCircGoldenRatioScan
             //initial position = start angle 
             float position = (float)mConfiguration.StartPosition;
 
-            //angle to be rotated each time
-            decimal degreeOfTurning = CalculateDegreeOfRotation();
-            //correction when the angles don't add up to a full circle
-            decimal calculationError = CalculateErrorOfRotation(degreeOfTurning, mConfiguration.NoOfProjections);
             // current rotate axis position
             float rotateaxisposition = 0;
             //flag for the manipulator homed
@@ -1875,6 +1713,12 @@ namespace IpcCircGoldenRatioScan
             mAngFile = new System.IO.StreamWriter(angfilename, false);
             // write first line
             mAngFile.WriteLine("Proj\tAngle(deg)");
+
+            //open .angTime file for output
+            string angTimefilename = mConfiguration.ProjectDirectory + @"\" + mConfiguration.ProjectName + @".angTime";
+            mAngTimeFile = new System.IO.StreamWriter(angTimefilename, false);
+            // write first line
+            mAngTimeFile.WriteLine("Proj\tAngle(deg)\tTimestamp");
 
             #endregion
 
@@ -1902,72 +1746,120 @@ namespace IpcCircGoldenRatioScan
 
             // Switch X-rays on and wait for stability
             XraysOnStabilise();
-			
-			// Move tilt axis to zero
-			MoveManipulator(IpcContract.Manipulator.EAxisName.Tilt, 0);
+
+            // Check if Manipulator not homed
+            if (!mManipulatorHomed)
+            {
+                DialogResult dialogResult = MessageBox.Show("The manipulator axes have not been homed. The movement cannot be started until all axes have been homed. Do you want to home all axes?",
+                    "Warning", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    mChannels.Manipulator.Axis.Home(IpcContract.Manipulator.EAxisName.All, true, false);
+                    //Check if the manipulator has been homed. If it hasn't then wait for it to do so
+                    while (mStatus == EStatus.OK && mManipulatorHomed == false)
+                        Thread.Sleep(100);
+                }
+                else if (dialogResult == DialogResult.No)
+                {
+                    //without homing we cannot proceed so tidy up
+                    mScan.Result = ETestResult.FailedStopped;
+                    OnTestEnded(mScan.Clone());
+                    mChannels.Xray.Controller.OperationMode(IpcContract.EOperationMode.Manual);
+                    mChannels.Xray.XRays.GenerationDemand(false);
+                    mApplicationState = EApplicationState.Connected;
+                    LayoutUI();
+                    return;
+                }
+            }
 
             #region Capture loop
             // Capture and XrayMonitoring loop
+
+            // Move tilt axis to zero
+            MoveManipulator(IpcContract.Manipulator.EAxisName.Tilt, 0);
+            // move to first position
+            MoveManipulator(mConfiguration.Axis, position);
+            if (mStatus != EStatus.OK)
+                return;
+
             while (!mStop && mStatus == EStatus.OK)
             {
+                // If pause initiated then wait until restarted
+                if (mPause)
+                {
+                    // Give control back to user
+                    mChannels.Xray.Controller.OperationMode(IpcContract.EOperationMode.Manual);
+                    // Display message
+                    DisplayLog("Process paused. Waiting to restart...");
+                    // Wait until restarted
+                    while (mPause)
+                        Thread.Sleep(50);
+                }
+
                 // If X-rays are not stable, then wait until they have returned to stability
                 if (!mXraysStable)
                 {
                     while (!mXraysStable)
                         Thread.Sleep(100);
                 }
-                // Check if Manipulator not homed
-                if (!mManipulatorHomed)
-                {
-                    DialogResult dialogResult = MessageBox.Show("The manipulator axes have not been homed. The movement cannot be started until all axes have been homed. Do you want to home all axes?",
-                        "Warning", MessageBoxButtons.YesNo);
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        mChannels.Manipulator.Axis.Home(IpcContract.Manipulator.EAxisName.All, true, false);
-                        //Check if the manipulator has been homed. If it hasn't then wait for it to do so
-                        while (mStatus == EStatus.OK && mManipulatorHomed == false)
-                            Thread.Sleep(100);
-                    }
-                    else if (dialogResult == DialogResult.No)
-                    {
-                        //without homing we cannot proceed so tidy up
-                        mScan.Result = ETestResult.FailedStopped;
-                        OnTestEnded(mScan.Clone());
-                        mChannels.Xray.Controller.OperationMode(IpcContract.EOperationMode.Manual);
-                        mChannels.Xray.XRays.GenerationDemand(false);
-                        mApplicationState = EApplicationState.Connected;
-                        LayoutUI();
-                        return;
-                    }
-                }
 
-                //go to next position
-                MoveManipulator(mConfiguration.Axis, position);
-                if (mStatus != EStatus.OK)
-                    return;
-
-                // grab the image
+                //
+                // Capture the image
+                //
                 ImageCapture(mConfiguration.AverageFrames, true);
                 if (mStatus != EStatus.OK)
                     break;
 
+                //
+                // Get manipulator ready 
+                //
+                // look up current rotate axis position
+                rotateaxisposition = mChannels.Manipulator.Axis.Position(mConfiguration.Axis);
+                // print line to ang file
+                mAngFile.WriteLine(mScan.ImagesCaptured + ":\t" + rotateaxisposition.ToString("000.000",CultureInfo.InvariantCulture));
+                // Next position is current position + gAng taken modulo 360
+                position = Mod((mScan.ImagesCaptured+1) * gAng, 360);
+
+                // Wait for capture to finish
+                while (mStatus == EStatus.OK && mImageCaptureComplete == false)
+                    Thread.Sleep(25);
+
+                // print line to angTime file
+                mAngTimeFile.WriteLine(mScan.ImagesCaptured + ":\t" + rotateaxisposition.ToString("000.000", CultureInfo.InvariantCulture) +
+                    "\t" + DateTime.Now.ToString("dd/MM/yyyy") + "\t" + DateTime.Now.ToString("H:mm:ss.fff"));
+
+                //
+                // Move manipulator 
+                //
+                mManipulatorMoveComplete = false;
+                // Set the target position you want to go to
+                mChannels.Manipulator.Axis.Target(mConfiguration.Axis, position);
+                //move the manipulator to the target position
+                mChannels.Manipulator.Axis.Go(mConfiguration.Axis);
+                DisplayLog("Moving Manipulator Axis " + mConfiguration.Axis.ToString() + " to " + position.ToString());
+
+
+                //
+                // Save image
+                //
                 //save image
                 ImageSave();
                 if (mStatus != EStatus.OK)
                     break;
+                DisplayLog("Saving image");
+
+                //
+                // Wait for the manipulator to finish moving and image save to occur
+                //
+                while (mStatus == EStatus.OK && (mManipulatorMoveComplete == false || mImageSaveComplete == false))
+                    Thread.Sleep(100);
+
+                DisplayLog("Image saved");
+                DisplayLog(mConfiguration.Axis.ToString() + " axis position is " + mChannels.Manipulator.Axis.Position(mConfiguration.Axis).ToString() + "\n");
 
                 mScan.LastImageTimestamp = DateTime.Now;
                 ++mScan.ImagesCaptured;
 
-                // look up current rotate axis position
-                rotateaxisposition = mChannels.Manipulator.Axis.Position(mConfiguration.Axis);
-
-                // print line to ang file
-                mAngFile.WriteLine(mScan.ImagesCaptured + @":\t" + String.Format(rotateaxisposition.ToString(), "F3"));
-
-                // Next position is current position + gAng taken modulo 360
-                position = Mod(mScan.ImagesCaptured*gAng, 360);
-				
                 // is it the last image captured?
                 if (mScan.ImagesCaptured > mConfiguration.NoOfProjections)
                 {
@@ -1990,6 +1882,7 @@ namespace IpcCircGoldenRatioScan
             //tidy up
             OnTestEnded(mScan.Clone());
             mAngFile.Close();
+            mAngTimeFile.Close();
             mChannels.Xray.Controller.OperationMode(IpcContract.EOperationMode.Manual);
             mChannels.Xray.XRays.GenerationDemand(false);
 
@@ -2068,6 +1961,8 @@ namespace IpcCircGoldenRatioScan
 
         #endregion Main routine
 
+
+       
 
 
     }

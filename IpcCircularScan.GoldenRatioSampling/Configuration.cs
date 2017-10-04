@@ -29,11 +29,11 @@ namespace IpcCircGoldenRatioScan
 		/// <summary> The position at which movement starts </summary>
 		public decimal StartPosition = 0;
 		/// <summary> The position at which the movement ends </summary>
-		public decimal EndPosition = 0;
+		public decimal EndPosition = 360;
 		/// <summary> The number of projection images required </summary>
 		public Int32 NoOfProjections = 4;
         /// <summary> Positional Increment </summary>
-        public decimal PositionalIncrement = 0;
+        public decimal PositionalIncrement = (decimal) IpcCircularScanForm_goldenRatioSampling.gAng;
         /// <summary> Total displacement through which sample will be moved </summary>
         public decimal TotalDisplacement = 0;
 		/// <summary> The number of frames taken for each projection </summary>
