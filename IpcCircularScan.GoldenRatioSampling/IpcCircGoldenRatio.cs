@@ -74,7 +74,6 @@ namespace IpcCircGoldenRatioScan
         public IpcContract.XRay.GenerationStatus.EXRayGenerationState mXrayGenerationStatus;
         /// <summary> Stability event counter </summary>
         private int mXraysStabilityCounter = 0;
-
         /// <summary> Lock Binning Flag </summary>
         private bool mLockTBBinning = false;
         /// <summary> Lock Exposure flag </summary>
@@ -115,23 +114,6 @@ namespace IpcCircGoldenRatioScan
 
         /// <summary> Shading correction Dialog </summary>
         private IpcCircGoldenRatioScan.ShadingCorrectionDialog mShadingCorrectionDialog = null;
-
-        // 
-        // List of Axis label indices
-        //
-        // X = 1,
-        // Y = 2,
-        // Z = 3,
-        // Magnification = 3,
-        // Tilt = 4,
-        // Rotate = 5,
-        // Detector = 6,
-
-        /// <summary> Array of Axis indexes 
-        /// Ensure that the correct index is chosen for each description below </summary>
-        private int[] mAxisListIndex = { 5 };
-        /// <summary> Axis Labels </summary>
-        private List<string> AxisListLabels = new List<string> { "Rotate" };
 
         /// <summary> Output log text that includes time and date stamps </summary>
         public string OutputLogText = null;
@@ -1872,6 +1854,9 @@ namespace IpcCircGoldenRatioScan
                 OnImageCaptured(mScan.Clone());
             }
             #endregion Capture loop
+
+            // Set number of projections acquired
+            mConfiguration.mNoProjectionsAcquired = mScan.ImagesCaptured;
 
             #region XtekCT file
             // Create XtekCT file

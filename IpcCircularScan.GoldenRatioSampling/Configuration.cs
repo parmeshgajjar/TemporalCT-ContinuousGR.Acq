@@ -32,6 +32,8 @@ namespace IpcCircGoldenRatioScan
 		public decimal EndPosition = 360;
 		/// <summary> The number of projection images required </summary>
 		public Int32 NoOfProjections = 4;
+        /// <summary> Number of projections acquired </summary>
+        public Int32 mNoProjectionsAcquired = 0;
         /// <summary> Positional Increment </summary>
         public decimal PositionalIncrement = (decimal) IpcCircularScanForm_goldenRatioSampling.gAng;
         /// <summary> Total displacement through which sample will be moved </summary>

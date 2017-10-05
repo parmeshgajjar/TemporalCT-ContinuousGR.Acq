@@ -136,7 +136,7 @@ namespace IpcCircGoldenRatioScan
 
             RegionPixelsX = DetectorPixelsX;
             RegionPixelsY = DetectorPixelsY;
-            Projections = mConfiguration.NoOfProjections;
+            Projections = mConfiguration.mNoProjectionsAcquired;
             InitialAngle = mConfiguration.StartPosition;
             AngularStep = mConfiguration.PositionalIncrement;
             FilterType = 0;
