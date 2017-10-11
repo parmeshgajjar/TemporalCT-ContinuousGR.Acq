@@ -1100,6 +1100,10 @@ namespace IpcCircGoldenRatioScan
                         case IpcContract.XRay.GenerationStatus.EXRayGenerationState.Success:
                             DisplayLog("X-rays are stable ");
                             mXraysStable = true;
+
+                            // Increment stability counter;
+                            mXraysStabilityCounter++;
+
                             break;
                         case IpcContract.XRay.GenerationStatus.EXRayGenerationState.WaitingForStability:
                             DisplayLog("Waiting for X-ray stability ");
@@ -1443,6 +1447,34 @@ namespace IpcCircGoldenRatioScan
                 // capture average image
                 mChannels.ImageProcessing.Image.Average(aRecursion, false);
 
+            }
+            catch (Exception ex)
+            {
+                AppLog.LogException(ex);
+                mStatus = EStatus.InternalError;
+            }
+        }
+
+        //******************************************************************
+        /// <summary>Capture image with N averages and wait for completion</summary>
+        /// <param name="aRecursion">Number of averages</param>
+        /// <param name="aShowProgressBar">Show progress bar if necessary!</param>
+        public void ImageCaptureWait(int aRecursion, bool aShowProgressBar)
+        {
+            if (mStatus != EStatus.OK)
+                return; // Nothing to be done.
+            if (mChannels == null)
+                return; // No channels are open
+            try
+            {
+                // reset flag
+                mImageCaptureComplete = false;
+                // capture average image
+                mChannels.ImageProcessing.Image.Average(aRecursion, false);
+
+                // Wait for capture to finish
+                while (mImageCaptureComplete == false)
+                    Thread.Sleep(25);
             }
             catch (Exception ex)
             {
@@ -1833,14 +1865,17 @@ namespace IpcCircGoldenRatioScan
                 //
                 // Wait for the manipulator to finish moving and image save to occur
                 //
-                while (mStatus == EStatus.OK && (mManipulatorMoveComplete == false || mImageSaveComplete == false))
+                while (mStatus == EStatus.OK &&  mImageSaveComplete == false)
                     Thread.Sleep(100);
-
+               
                 DisplayLog("Image saved");
-                DisplayLog(mConfiguration.Axis.ToString() + " axis position is " + mChannels.Manipulator.Axis.Position(mConfiguration.Axis).ToString() + "\n");
-
                 mScan.LastImageTimestamp = DateTime.Now;
                 ++mScan.ImagesCaptured;
+                
+                while (mStatus == EStatus.OK && mManipulatorMoveComplete == false )
+                    Thread.Sleep(100);
+
+                DisplayLog(mConfiguration.Axis.ToString() + " axis position is " + mChannels.Manipulator.Axis.Position(mConfiguration.Axis).ToString() + "\n");
 
                 // is it the last image captured?
                 if (mScan.ImagesCaptured > mConfiguration.NoOfProjections)

@@ -412,7 +412,7 @@ namespace IpcCircGoldenRatioScan
             else
             {
                 // Capture average flat image
-                mParentForm.ImageCapture(mNoImages, true);
+                mParentForm.ImageCaptureWait(mNoImages, true);
                 // Set filename
                 string filename = @"Flat_" +
                     mChannels.Xray.XRays.KilovoltsDemand().ToString() + "kV" + 
@@ -460,7 +460,7 @@ namespace IpcCircGoldenRatioScan
             else
             {
                 // Capture average dark image
-                mParentForm.ImageCapture(mNoImages, true);
+                mParentForm.ImageCaptureWait(mNoImages, true);
                 // Set filename
                 string filename = @"Dark_" +
                     mChannels.Xray.XRays.KilovoltsDemand().ToString() + "kV" +
