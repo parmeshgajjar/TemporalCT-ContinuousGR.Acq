@@ -119,8 +119,8 @@ namespace IpcCircGoldenRatioScan
             Name = mConfiguration.ProjectName;
             OutputFolderName = mConfiguration.ProjectName;
             VoxelsX = mChannels.ImageProcessing.Detector.Width();
-            VoxelsY = mChannels.ImageProcessing.Detector.Height();
-            VoxelsZ = mChannels.ImageProcessing.Detector.Width();
+            VoxelsY = mChannels.ImageProcessing.Detector.Width();
+            VoxelsZ = mChannels.ImageProcessing.Detector.Height();
 
             DetectorPixelsX = mChannels.ImageProcessing.Detector.Width();
             DetectorPixelsY = mChannels.ImageProcessing.Detector.Height();
