@@ -1501,6 +1501,9 @@ namespace IpcCircGoldenRatioScan
                 //save the current image displayed to disk
                 mChannels.ImageProcessing.Image.SaveAsTiff(fileName, true, false, true);// monochrome, no tone curve, 16-bits
 
+                DisplayLog("Image saved");
+                mScan.LastImageTimestamp = DateTime.Now;
+                ++mScan.ImagesCaptured;
             }
             catch (Exception ex)
             {
@@ -1529,9 +1532,9 @@ namespace IpcCircGoldenRatioScan
                 //save the current image displayed to disk
                 mChannels.ImageProcessing.Image.SaveAsTiff(aFilename, true, false, true);// monochrome, no tone curve, 16-bits
 
-                //wait for it to finish
-                while (mStatus == EStatus.OK && mImageSaveComplete == false)
-                    Thread.Sleep(25);
+                DisplayLog("Image saved");
+                mScan.LastImageTimestamp = DateTime.Now;
+                ++mScan.ImagesCaptured;
             }
             catch (Exception ex)
             {
@@ -1660,6 +1663,8 @@ namespace IpcCircGoldenRatioScan
 
                 //Close file
                 logfile.Close();
+
+                DisplayLog("Written log file");
             }
             catch (Exception ex)
             {
@@ -1686,6 +1691,8 @@ namespace IpcCircGoldenRatioScan
 
                 //Close file
                 logfile.Close();
+
+                DisplayLog("Written log file");
             }
             catch (Exception ex)
             {
@@ -1858,20 +1865,10 @@ namespace IpcCircGoldenRatioScan
                 //
                 //save image
                 ImageSave();
-                if (mStatus != EStatus.OK)
-                    break;
-                DisplayLog("Saving image");
 
                 //
-                // Wait for the manipulator to finish moving and image save to occur
+                // Wait for the manipulator to finish moving
                 //
-                while (mStatus == EStatus.OK &&  mImageSaveComplete == false)
-                    Thread.Sleep(100);
-               
-                DisplayLog("Image saved");
-                mScan.LastImageTimestamp = DateTime.Now;
-                ++mScan.ImagesCaptured;
-                
                 while (mStatus == EStatus.OK && mManipulatorMoveComplete == false )
                     Thread.Sleep(100);
 
