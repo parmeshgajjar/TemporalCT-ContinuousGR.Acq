@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("XT 5.1.4.3")]
 [assembly: AssemblyTitle("IPC Circular Scan with golden ratio angular sampling")]
 
-[assembly: AssemblyDescription("Performs a start-stop circular CT scan with golden ratio angular sampling")]
+[assembly: AssemblyDescription("Performs a continuous projection acquisition with golden ratio angular sampling")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

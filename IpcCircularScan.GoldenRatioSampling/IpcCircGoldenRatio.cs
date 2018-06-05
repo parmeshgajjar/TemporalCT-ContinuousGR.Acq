@@ -103,8 +103,12 @@ namespace IpcCircGoldenRatioScan
         /// <summary> Paused required? </summary>
         private Boolean mPause = false;
 
+        /// <summary> Alarm raised? </summary>
+        private Boolean mAlarm = false;
+
         private ProjectScan mScan = new ProjectScan();
         private Thread mWorkingThread = null;
+        private Thread mAlarmThread = null;
 
         /// <summary> ang file </summary>
         System.IO.StreamWriter mAngFile = null;
@@ -377,9 +381,11 @@ namespace IpcCircGoldenRatioScan
             { AppLog.LogException(ex); }
         }
 
+
+
         //*****************************************************************
         /// <summary>
-        /// Routine when system is paused
+        /// Routine when Pause button is pressed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -387,29 +393,41 @@ namespace IpcCircGoldenRatioScan
         {
             try
             {
-                if (!mPause)
-                {
                     mPause = true;
                     DisplayLog("Process paused by user");
-                    buttonPause.Text = "RESTART";
+                    LayoutUI();
+            }
+            catch (Exception ex)
+            {
+                AppLog.LogException(ex);
+            }
+        }
+
+        //*****************************************************************
+        /// <summary>
+        /// Routine when restart button is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonRestart_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Check x-rays are on and stable
+                if (mXraysStable)
+                {
+                    mPause = false;
+                    DisplayLog("Process restarted by user");
+                    LayoutUI();
+                    mChannels.Xray.Controller.OperationMode(IpcContract.EOperationMode.External);
                 }
+                // else if not on then give warning message
                 else
                 {
-                    // Check x-rays are on and stable
-                    if (mXraysStable)
-                    {
-                        mPause = false;
-                        DisplayLog("Process restarted by user");
-                        buttonPause.Text = "PAUSE";
-                        mChannels.Xray.Controller.OperationMode(IpcContract.EOperationMode.External);
-                    }
-                    // else if not on then give warning message
-                    else
-                    {
-                        mPause = true;
-                        MessageBox.Show("X-rays are no longer on. Please check before restarting", "X-rays no longer on",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    mPause = true;
+                    LayoutUI();
+                    MessageBox.Show("X-rays are no longer on. Please check before restarting", "X-rays no longer on",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
@@ -823,10 +841,61 @@ namespace IpcCircGoldenRatioScan
 
                 buttonStop.Visible = true;
                 buttonStop.Enabled = true;
-                buttonPause.Enabled = true;
-                buttonPause.Visible = true;
-                buttonStart.Visible = false;
+
+                if (mPause)
+                {
+                    buttonRestart.Enabled = true;
+                    buttonRestart.Visible = true;
+                    buttonPause.Enabled = false;
+                    buttonPause.Visible = false;
+                }
+                else
+                {
+                    buttonRestart.Enabled = false;
+                    buttonRestart.Visible = false;
+                    buttonPause.Enabled = true;
+                    buttonPause.Visible = true;
+                }
+
+                    buttonStart.Visible = false;
                 buttonStart.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Abort function
+        /// </summary>
+        private void UserAbort()
+        {
+            // If no existing problem, then set status to cancel
+            if (mStatus == EStatus.OK)
+            {
+                DisplayLog("Process aborted by the user");
+                // Set stop flags
+                mStop = true;
+                mStatus = EStatus.ExternalCancel;
+                mChannels.Manipulator.Axes.Stop(); //stop movement on all axes
+                mChannels.Xray.XRays.GenerationDemand(false); //turn x-rays off
+                mApplicationState = EApplicationState.Connected;//stay connected to Inspect-X
+                LayoutUI();
+            }
+        }
+
+
+        /// <summary>
+        /// Routine when X-ray Interlock Alarm is triggered. 
+        /// </summary>
+        private void XrayInterlockAlarmRoutine()
+        {
+            // Alarm causes system to be paused; 
+            mPause = true;
+            // Update UI
+            LayoutUI();
+            // Give warning box
+            if (mAlarm)
+            {
+                MessageBox.Show("X-ray interlock broken!", "The X-ray interlock has been broken. System has been paused. Please check X-ray area is clear and there are no obstructions before restarting",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -854,6 +923,8 @@ namespace IpcCircGoldenRatioScan
                         {
                             mChannels.Application.mEventSubscriptionHeartbeat.Event +=
                                 new EventHandler<CommunicationsChannel_Application.EventArgsHeartbeat>(EventHandlerHeartbeatApp);
+                            mChannels.Application.mEventSubscriptionInspectXAlarms.Event +=
+                                new EventHandler<CommunicationsChannel_Application.EventArgsInspectXAlarms>(EventHandlerInspectXAlarms);
                         }
 
                         if (mChannels.Xray != null)
@@ -902,6 +973,8 @@ namespace IpcCircGoldenRatioScan
                     {
                         mChannels.Application.mEventSubscriptionHeartbeat.Event -=
                             new EventHandler<CommunicationsChannel_Application.EventArgsHeartbeat>(EventHandlerHeartbeatApp);
+                        mChannels.Application.mEventSubscriptionInspectXAlarms.Event -=
+                            new EventHandler<CommunicationsChannel_Application.EventArgsInspectXAlarms>(EventHandlerInspectXAlarms);
                     }
 
                     if (mChannels.Xray != null)
@@ -1215,6 +1288,114 @@ namespace IpcCircGoldenRatioScan
             IpcContractClientInterface.CommunicationsChannel_ImageProcessing.EventArgsIPEvent e)
         { }
 
+
+        //************************************************************
+        /// <summary>
+        /// callback for the application's Inspect-X Alarms
+        /// </summary>
+        void EventHandlerInspectXAlarms(object sender, CommunicationsChannel_Application.EventArgsInspectXAlarms e)
+        {
+            try
+            {
+                if (this.InvokeRequired)
+                {
+                    MethodInvoker Del = delegate { EventHandlerInspectXAlarms(sender, e); }; this.Invoke(Del);
+                }
+                else
+                {
+                    switch (e.Alarms)
+                    {
+                        case Inspect_X_Definitions.InspectXAlarms.AutomaticDoorFault:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.AutomaticDoorOpen:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.Coolant:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.DoorEdge:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.DoorServiceMode:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.FrameGrabber:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.InspectXNotResponding:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.LoaderInterlock:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.ManipulatorController:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.ManipulatorFollowingError:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.ManipulatorInterlock:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.ManipulatorOverRotateError:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.ManipulatorStoppedCTScanAbort:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.ManipulatorUnderRotateError:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.ManipulatorUnhomed:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.None:
+                            //Your code goes here...
+                            mAlarm = false;
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.ReconstructionPC:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.ScanStoppedByOperator:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.TemperatureController:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.Unexpected:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.WaitingForOperator:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.XRayController:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.XRayFilamentDemand:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.XRayInterlock:
+                            mAlarm = true;
+                            // Start thread with Xray Interlock Alarm Routine
+                            mAlarmThread = new Thread(XrayInterlockAlarmRoutine);
+                            mAlarmThread.Start();
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.XRayStabiliseFail:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.XRayTripCTScan:
+                            //Your code goes here...
+                            break;
+                        case Inspect_X_Definitions.InspectXAlarms.XRayTripCTScanAbort:
+                            //Your code goes here...
+                            break;
+                    }
+
+                }
+            }
+            catch (Exception ex) { AppLog.LogException(ex); }
+        }
 
 
         //****************************************************************
@@ -1890,14 +2071,16 @@ namespace IpcCircGoldenRatioScan
             // Set number of projections acquired
             mConfiguration.mNoProjectionsAcquired = mScan.ImagesCaptured;
 
+
+            //tidy up
+            OnTestEnded(mScan.Clone());
+
             #region XtekCT file
             // Create XtekCT file
             XtekCT xtekctfile = new XtekCT(mChannels, mConfiguration);
             xtekctfile.CreateXtekCTFile();
             #endregion XtekCT file
 
-            //tidy up
-            OnTestEnded(mScan.Clone());
             mAngFile.Close();
             mAngTimeFile.Close();
             mChannels.Xray.Controller.OperationMode(IpcContract.EOperationMode.Manual);
@@ -1955,25 +2138,6 @@ namespace IpcCircGoldenRatioScan
 
             //Reset UI
             LayoutUI();
-        }
-
-        /// <summary>
-        /// Abort function
-        /// </summary>
-        private void UserAbort()
-        {
-            // If no existing problem, then set status to cancel
-            if (mStatus == EStatus.OK)
-            {
-                DisplayLog("Process aborted by the user");
-                // Set stop flags
-                mStop = true;
-                mStatus = EStatus.ExternalCancel;
-                mChannels.Manipulator.Axes.Stop(); //stop movement on all axes
-                mChannels.Xray.XRays.GenerationDemand(false); //turn x-rays off
-                mApplicationState = EApplicationState.Connected;//stay connected to Inspect-X
-                LayoutUI();
-            }
         }
 
         #endregion Main routine

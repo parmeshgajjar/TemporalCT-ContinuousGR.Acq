@@ -101,6 +101,7 @@
             this.buttonPause = new System.Windows.Forms.Button();
             this.buttonStop = new System.Windows.Forms.Button();
             this.buttonStart = new System.Windows.Forms.Button();
+            this.buttonRestart = new System.Windows.Forms.Button();
             this.panelResultsDirectory.SuspendLayout();
             this.panelFeedback.SuspendLayout();
             this.panelManipulatorDisplay.SuspendLayout();
@@ -916,12 +917,24 @@
             this.buttonStart.UseVisualStyleBackColor = true;
             this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
+            // buttonRestart
+            // 
+            this.buttonRestart.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonRestart.Location = new System.Drawing.Point(6, 534);
+            this.buttonRestart.Name = "buttonRestart";
+            this.buttonRestart.Size = new System.Drawing.Size(232, 94);
+            this.buttonRestart.TabIndex = 15;
+            this.buttonRestart.Text = "RESTART";
+            this.buttonRestart.UseVisualStyleBackColor = true;
+            this.buttonRestart.Click += new System.EventHandler(this.buttonRestart_Click);
+            // 
             // IpcCircularScanForm_goldenRatioSampling
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(904, 642);
             this.Controls.Add(this.buttonStart);
+            this.Controls.Add(this.buttonRestart);
             this.Controls.Add(this.buttonStop);
             this.Controls.Add(this.buttonPause);
             this.Controls.Add(this.panelShadingCorrection);
@@ -935,7 +948,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(900, 580);
             this.Name = "IpcCircularScanForm_goldenRatioSampling";
-            this.Text = "IPC Demo - Circular Scan (with golden ratio sampling)";
+            this.Text = "Continuous Golden Ratio Acquisition";
             this.panelResultsDirectory.ResumeLayout(false);
             this.panelResultsDirectory.PerformLayout();
             this.panelFeedback.ResumeLayout(false);
@@ -1035,6 +1048,7 @@
         private System.Windows.Forms.Button buttonPause;
         private System.Windows.Forms.Button buttonStop;
         private System.Windows.Forms.Button buttonStart;
+        private System.Windows.Forms.Button buttonRestart;
 	}
 }
 

@@ -154,6 +154,10 @@
     <Content Include="Application.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Inspect-X Definitions\Inspect-X Definitions.csproj">
+      <Project>{48c0ffe6-4e92-48ed-959e-feecad21c50a}</Project>
+      <Name>Inspect-X Definitions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\IpcContractClientInterface\IpcContractClientInterface4.csproj">
       <Project>{07B3CC40-185D-447B-8828-440AFC913D83}</Project>
       <Name>IpcContractClientInterface4</Name>
